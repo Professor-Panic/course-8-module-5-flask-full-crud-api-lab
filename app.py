@@ -21,34 +21,45 @@ events = [
 # Create a new event from JSON input
 @app.route("/events", methods=["POST"])
 def create_event():
-    # TODO: Task 2 - Design and Develop the Code
+    data=request.get_json()
+    if not data:
+        return jsonify({"error": "JSON body required"}), 400
+    title=data.get("title")
 
-    # TODO: Task 3 - Implement the Loop and Process Each Element
-
-    # TODO: Task 4 - Return and Handle Results
-    pass
+    print(title)
+    events.append(Event(len(events)+1,title))
+    return jsonify({
+        "id" : len(events),
+        "title": title 
+    }), 201
 
 # TODO: Task 1 - Define the Problem
 # Update the title of an existing event
 @app.route("/events/<int:event_id>", methods=["PATCH"])
 def update_event(event_id):
-    # TODO: Task 2 - Design and Develop the Code
+    data=request.get_json()
+    if not data:
+            return jsonify({"error": "JSON body required"}), 400
+    title=data.get("title")
+    if event_id <len(events):
+        events[event_id].title=title
+        return jsonify({
+                "title": title 
+        }), 200
+    else:
+        return jsonify({"error": "Invalid id"}) , 404    
 
-    # TODO: Task 3 - Implement the Loop and Process Each Element
-
-    # TODO: Task 4 - Return and Handle Results
-    pass
-
-# TODO: Task 1 - Define the Problem
-# Remove an event from the list
 @app.route("/events/<int:event_id>", methods=["DELETE"])
 def delete_event(event_id):
-    # TODO: Task 2 - Design and Develop the Code
+    event = next(
+        (event for event in events if event.id == event_id),
+        None
+    )
 
-    # TODO: Task 3 - Implement the Loop and Process Each Element
+    if event is None:
+        return jsonify({"error": "Invalid Id"}), 404
 
-    # TODO: Task 4 - Return and Handle Results
-    pass
-
+    events.remove(event)
+    return "", 204
 if __name__ == "__main__":
     app.run(debug=True)
